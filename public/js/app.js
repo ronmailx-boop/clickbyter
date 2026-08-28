@@ -28,6 +28,7 @@ const urlInput = document.getElementById("article-url");
 const submitButton = form.querySelector(".primary-button");
 const statusRegion = document.getElementById("status-region");
 const resultSection = document.getElementById("result-section");
+const resultTitle = document.getElementById("result-title");
 const resultAnswer = document.getElementById("result-answer");
 const resultSourceLink = document.getElementById("result-source-link");
 const historySection = document.getElementById("history-section");
@@ -39,13 +40,15 @@ function setStatus(message, tone = "") {
   statusRegion.dataset.tone = tone;
 }
 
-function showAnswer(sourceUrl, answer) {
+function showAnswer(sourceUrl, sourceTitle, answer) {
+  resultTitle.textContent = sourceTitle || "";
   resultAnswer.textContent = answer;
   resultSourceLink.href = sourceUrl;
   resultSection.hidden = false;
 }
 
 function showFailure(sourceUrl) {
+  resultTitle.textContent = "";
   resultAnswer.textContent = "";
   resultSourceLink.href = sourceUrl;
   resultSection.hidden = false;
@@ -89,7 +92,7 @@ async function processUrl(url) {
   try {
     const { answer, sourceUrl, sourceTitle } = await decodeArticle(url);
     setStatus("");
-    showAnswer(sourceUrl, answer);
+    showAnswer(sourceUrl, sourceTitle, answer);
     addHistoryItem({ url: sourceUrl, sourceTitle, answer });
     renderHistory();
   } catch (err) {

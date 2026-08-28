@@ -4,9 +4,11 @@ compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-# The exact origin allowed to call this API (CORS). Update to the real
-# deployed GitHub Pages URL, e.g. "https://<user>.github.io" or a custom domain.
-ALLOWED_ORIGIN = "http://localhost:8791"
+# The exact origin allowed to call this API (CORS). Note: an Origin header is
+# scheme+host only, never a path - so this is "https://ronmailx-boop.github.io",
+# NOT ".../clickbyter" (the repo name is a path segment GitHub Pages serves the
+# site under, not part of the origin).
+ALLOWED_ORIGIN = "https://ronmailx-boop.github.io"
 
 # Secrets (never set here - use `wrangler secret put GROQ_API_KEY` instead):
 #   GROQ_API_KEY

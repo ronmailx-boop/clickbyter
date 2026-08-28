@@ -1,4 +1,4 @@
-const CACHE_NAME = "clickbyter-shell-v2";
+const CACHE_NAME = "clickbyter-shell-v3";
 const SHELL_ASSETS = [
   "./",
   "./index.html",
@@ -42,17 +42,25 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Network-first: always try to get the latest shell files, and only fall
+  // back to the cache when actually offline. A pure cache-first strategy
+  // here meant every future deploy needed a CACHE_NAME bump to ever be
+  // seen - this removes that failure mode entirely.
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).catch(
-        () =>
-          new Response("אין חיבור לאינטרנט", {
-            status: 503,
-            statusText: "Offline",
-            headers: { "Content-Type": "text/plain; charset=utf-8" },
-          })
-      );
-    })
+    fetch(event.request)
+      .then((response) => {
+        const responseCopy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseCopy));
+        return response;
+      })
+      .catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
+        return new Response("אין חיבור לאינטרנט", {
+          status: 503,
+          statusText: "Offline",
+          headers: { "Content-Type": "text/plain; charset=utf-8" },
+        });
+      })
   );
 });

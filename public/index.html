@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Clickbyter - פענוח קליקבייט</title>
+  <meta name="description" content="הדביקו או שתפו קישור לכתבת קליקבייט, וקבלו רק את התשובה שהכותרת הסתירה." />
+  <meta name="theme-color" content="#111122" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">Clickbyter</h1>
+    <p class="app-tagline">מפענחים קליקבייט - בלי לקרוא את כל הכתבה</p>
+  </header>
+
+  <main class="app-main">
+    <form id="add-link-form" class="add-link-form">
+      <label for="article-url" class="field-label">קישור לכתבה</label>
+      <input
+        type="text"
+        id="article-url"
+        name="url"
+        class="url-input"
+        placeholder="הדביקו כאן קישור לכתבה..."
+        autocomplete="off"
+        inputmode="url"
+        required
+      />
+      <button type="submit" class="primary-button">פענח</button>
+    </form>
+
+    <section id="status-region" class="status-region" aria-live="polite"></section>
+
+    <section id="result-section" class="result-section" hidden>
+      <h2 class="visually-hidden">תוצאת הפענוח</h2>
+      <p id="result-answer" class="result-answer"></p>
+      <a id="result-source-link" class="source-link" href="#" target="_blank" rel="noopener noreferrer">
+        לקריאת הכתבה המקורית
+      </a>
+    </section>
+
+    <section id="history-section" class="history-section" hidden>
+      <div class="history-header">
+        <h2>היסטוריה</h2>
+        <button type="button" id="clear-history-button" class="text-button">נקה היסטוריה</button>
+      </div>
+      <ul id="history-list" class="history-list"></ul>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>הקישורים שתשתפו נשלחים לעיבוד באמצעות Groq API. ההיסטוריה נשמרת במכשיר שלכם בלבד.</p>
+  </footer>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

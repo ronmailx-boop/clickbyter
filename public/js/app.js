@@ -1,6 +1,7 @@
 import { decodeArticle, ApiError } from "./api-client.js";
 import { getHistory, addHistoryItem, clearHistory } from "./history-store.js";
 import { getSharedUrlFromLocation } from "./share-target.js";
+import { extractSharedUrl } from "./url-extract.js";
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -108,8 +109,19 @@ clearHistoryButton.addEventListener("click", () => {
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
-  const url = urlInput.value.trim();
-  if (!url) return;
+  const pasted = urlInput.value.trim();
+  if (!pasted) return;
+
+  // Pasted text sometimes carries more than the bare URL (e.g. a forwarded
+  // "מקור: ... https://..." message) - extract the link the same way the
+  // share-target flow does, instead of requiring a perfectly clean URL.
+  const url = extractSharedUrl({ url: null, text: pasted, title: null });
+  if (!url) {
+    setStatus("לא זיהינו קישור בטקסט שהודבק. ודאו שהקישור מתחיל ב-http:// או https://", "error");
+    return;
+  }
+
+  urlInput.value = url;
   processUrl(url);
 });
 

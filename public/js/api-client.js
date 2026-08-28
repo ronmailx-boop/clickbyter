@@ -1,6 +1,4 @@
-// TODO: after the first `wrangler deploy` (see worker/README or PROJECT_STATE.md),
-// replace this with the real Worker URL, e.g. "https://clickbyter-api.<subdomain>.workers.dev".
-const API_BASE_URL = "http://localhost:8792";
+const API_BASE_URL = "https://clickbyter-api.ronmailx.workers.dev";
 
 export class ApiError extends Error {
   constructor(code) {

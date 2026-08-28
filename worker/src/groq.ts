@@ -1,7 +1,10 @@
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-// Confirm this is still a currently-hosted Groq model at deploy time -
-// Groq's hosted model lineup changes; see https://console.groq.com/docs/models
-const GROQ_MODEL = "llama-3.1-8b-instant";
+// Confirm this is still available on a standard (non-Enterprise) account at
+// deploy time - Groq's hosted model lineup changes, and some models (e.g.
+// llama-3.1-8b-instant, llama-3.3-70b-versatile as of writing) have moved to
+// Enterprise-only ("Contact Sales") pricing, which returns a 404 to a normal
+// API key. See https://console.groq.com/docs/models
+const GROQ_MODEL = "openai/gpt-oss-20b";
 const GROQ_TIMEOUT_MS = 15000;
 const MAX_ARTICLE_CHARS = 8000;
 

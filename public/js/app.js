@@ -76,9 +76,13 @@ function renderHistory() {
   }
 }
 
+let isProcessing = false;
+
 async function processUrl(url) {
+  if (isProcessing) return;
+  isProcessing = true;
   resultSection.hidden = true;
-  submitButton.disabled = true;
+  submitButton.setAttribute("aria-busy", "true");
   setStatus("מפענח את הכתבה...");
 
   try {
@@ -92,7 +96,8 @@ async function processUrl(url) {
     setStatus(ERROR_MESSAGES[code] || ERROR_MESSAGES.UNKNOWN_ERROR, "error");
     showFailure(url);
   } finally {
-    submitButton.disabled = false;
+    submitButton.removeAttribute("aria-busy");
+    isProcessing = false;
   }
 }
 

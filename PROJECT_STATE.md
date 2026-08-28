@@ -24,11 +24,11 @@
 - [ ] שלב 2: Worker חילוץ טקסט (`/api/extract`) + זרימת הדבקה ידנית
 - [ ] שלב 3: אינטגרציית Groq (`/api/decode`) + היסטוריה
 - [ ] שלב 4: Web Share Target
-- [ ] שלב 5: ליטוש PWA + נגישות
+- [x] שלב 5: ליטוש PWA + נגישות - הוחלף `disabled` על כפתור השליחה ב-`aria-busy` + דגל מניעת שליחה כפולה (שומר על יכולת פוקוס בזמן עיבוד - נבדק שהפוקוס לא "נופל" ל-body בזמן טעינה), נוסף `role="status"` לאזור ההודעות ו-`aria-live="polite"` לאזור התוצאה, `text-align:end` במקום `right` בשדה הקישור (נכונות RTL לוגית), ונוספו `:focus-visible` outlines. נבדקו יחסי ניגודיות (WCAG) לכל צירופי הצבעים - כולם עוברים AA (הטקסט המושתק והשגיאה גם עוברים AAA כמעט). נבדק סדר Tab הגיוני עם Playwright.
 - [ ] שלב 6: מסמכים משפטיים (`docs/legal/`)
 
 ## Current Focus
-שלבים 0-3 הושלמו. עוברים לשלב 4 (Web Share Target). עדיין דרושים מהמשתמש (לא חוסם את תחילת הקוד, אך דרוש לפני שהעיבוד יעבוד בפועל מול Groq אמיתי):
+שלבים 0-5 הושלמו. עוברים לשלב 6 (מסמכים משפטיים) - השלב האחרון בתוכנית. עדיין דרושים מהמשתמש (לא חוסם את תחילת הקוד, אך דרוש לפני שהעיבוד יעבוד בפועל מול Groq אמיתי):
 - מפתח API של Groq (מ-console.groq.com) - יוגדר כ-secret ב-Cloudflare Worker (`wrangler secret put GROQ_API_KEY`), לא בקוד. **טרם סופק - העיבוד לא יעבוד מול Groq אמיתי בלעדיו.**
 - חשבון Cloudflare + `CLOUDFLARE_API_TOKEN` כ-GitHub secret (ליצירת ה-Worker ופריסתו בפועל דרך `deploy-worker.yml`).
 - הפעלת "Settings → Pages → Source: GitHub Actions" בריפו כדי שפריסת `public/` תעבוד בפועל.

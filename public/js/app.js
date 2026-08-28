@@ -90,9 +90,8 @@ async function processUrl(url) {
   setStatus("מפענח את הכתבה...");
 
   try {
-    const { answer, sourceUrl, sourceTitle, debugMethod, debugTextLength } = await decodeArticle(url);
-    // TODO: remove once real-world extraction quality is verified.
-    setStatus(debugMethod ? `[דיבוג: ${debugMethod}, ${debugTextLength} תווים]` : "");
+    const { answer, sourceUrl, sourceTitle } = await decodeArticle(url);
+    setStatus("");
     showAnswer(sourceUrl, sourceTitle, answer);
     addHistoryItem({ url: sourceUrl, sourceTitle, answer });
     renderHistory();

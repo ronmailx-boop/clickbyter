@@ -156,6 +156,13 @@ body {
   display: flex;
 }
 
+.result-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
 .result-answer {
   margin: 0;
   font-size: 1.1rem;

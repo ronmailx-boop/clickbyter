@@ -94,7 +94,13 @@ async function processUrl(url) {
     renderHistory();
   } catch (err) {
     const code = err instanceof ApiError ? err.code : "UNKNOWN_ERROR";
-    setStatus(ERROR_MESSAGES[code] || ERROR_MESSAGES.UNKNOWN_ERROR, "error");
+    let message = ERROR_MESSAGES[code] || ERROR_MESSAGES.UNKNOWN_ERROR;
+    // TODO: remove once real-world extraction/Groq failures are debugged -
+    // temporary technical detail to help diagnose unexpected errors.
+    if (err instanceof ApiError && err.detail) {
+      message += ` (${err.detail})`;
+    }
+    setStatus(message, "error");
     showFailure(url);
   } finally {
     submitButton.removeAttribute("aria-busy");

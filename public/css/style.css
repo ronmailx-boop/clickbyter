@@ -199,6 +199,20 @@ body {
   gap: var(--space-2);
 }
 
+.history-item {
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) - 6px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.history-item-answer {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
 .app-footer {
   text-align: center;
   padding: var(--space-2);

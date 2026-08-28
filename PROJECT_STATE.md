@@ -18,7 +18,8 @@
 - [x] שינוי שם ריפו ל-`clickbyter` (בוצע ע"י המשתמש ב-GitHub)
 - [x] שלב 0: שלד פרויקט (קבצי תשתית, מבנה תיקיות)
 - [x] שלב 1: שלד PWA סטטי (HTML/CSS/manifest/SW) - נבדק מקומית (SW פעיל, RTL תקין, ללא שגיאות קונסול). פריסה בפועל ל-GitHub Pages דורשת הפעלת "Deploy from GitHub Actions" ב-Settings → Pages (ראו "Current Focus").
-- [x] שלב 2: Worker לחילוץ טקסט (`/api/extract` זמני) + זרימת הדבקה ידנית - נבדק עם `wrangler dev` מקומית: ראוטינג/CORS/הגנת SSRF/שרשרת נפילה (readability→og→raw-paragraphs) כולם עובדים נכון, וה-UI מציג תוצאה/שגיאה כמצופה (נבדק עם Playwright, כולל mock לתשובת ה-API). **בעבודה כרגע: שלב 3**
+- [x] שלב 2: Worker לחילוץ טקסט (`/api/extract` זמני) + זרימת הדבקה ידנית - נבדק עם `wrangler dev` מקומית: ראוטינג/CORS/הגנת SSRF/שרשרת נפילה (readability→og→raw-paragraphs) כולם עובדים נכון, וה-UI מציג תוצאה/שגיאה כמצופה (נבדק עם Playwright, כולל mock לתשובת ה-API).
+- [x] שלב 3: אינטגרציית Groq (`groq.ts`, מוזג ל-`/api/decode` יחיד) + היסטוריה - נבדק: קריאת Groq מדומה (הצלחה/RATE_LIMITED/מפתח שגוי/תשובה ריקה), כרטיס תשובה+קישור סופי מוצג נכון, פריט נשמר ומופיע ב-`localStorage` (נבדק שההיסטוריה שורדת רענון עמוד), וכפתור "נקה היסטוריה" עובד (`history-section.hidden` הופך ל-true נכון כשאין פריטים). **בעבודה כרגע: שלב 4**
 - [ ] שלב 2: Worker חילוץ טקסט (`/api/extract`) + זרימת הדבקה ידנית
 - [ ] שלב 3: אינטגרציית Groq (`/api/decode`) + היסטוריה
 - [ ] שלב 4: Web Share Target
@@ -26,8 +27,8 @@
 - [ ] שלב 6: מסמכים משפטיים (`docs/legal/`)
 
 ## Current Focus
-שלבים 0-2 הושלמו. עוברים לשלב 3 (אינטגרציית Groq + היסטוריה). עדיין דרושים מהמשתמש (לא חוסם את תחילת הקוד, אך דרוש לפני שהעיבוד יעבוד בפועל):
-- מפתח API של Groq (מ-console.groq.com) - יוגדר כ-secret ב-Cloudflare Worker (`wrangler secret put GROQ_API_KEY`), לא בקוד. **דרוש עכשיו לשלב 3.**
+שלבים 0-3 הושלמו. עוברים לשלב 4 (Web Share Target). עדיין דרושים מהמשתמש (לא חוסם את תחילת הקוד, אך דרוש לפני שהעיבוד יעבוד בפועל מול Groq אמיתי):
+- מפתח API של Groq (מ-console.groq.com) - יוגדר כ-secret ב-Cloudflare Worker (`wrangler secret put GROQ_API_KEY`), לא בקוד. **טרם סופק - העיבוד לא יעבוד מול Groq אמיתי בלעדיו.**
 - חשבון Cloudflare + `CLOUDFLARE_API_TOKEN` כ-GitHub secret (ליצירת ה-Worker ופריסתו בפועל דרך `deploy-worker.yml`).
 - הפעלת "Settings → Pages → Source: GitHub Actions" בריפו כדי שפריסת `public/` תעבוד בפועל.
 - לאחר הפריסה הראשונה של ה-Worker: לעדכן את `API_BASE_URL` ב-`public/js/api-client.js` מ-`http://localhost:8792` לכתובת האמיתית (`https://clickbyter-api.<subdomain>.workers.dev` או דומיין מותאם), ואת `ALLOWED_ORIGIN` ב-`worker/wrangler.toml` לכתובת ה-Pages האמיתית.

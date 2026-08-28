@@ -1,4 +1,5 @@
-import { extractArticle, ApiError } from "./api-client.js";
+import { decodeArticle, ApiError } from "./api-client.js";
+import { getHistory, addHistoryItem, clearHistory } from "./history-store.js";
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -13,6 +14,9 @@ const ERROR_MESSAGES = {
   FETCH_FAILED: "לא הצלחנו לגשת לכתבה. ייתכן שהקישור שגוי או שהאתר חוסם גישה אוטומטית.",
   EXTRACTION_FAILED:
     "לא הצלחנו לחלץ תוכן קריא מהכתבה (ייתכן שמדובר בתוכן מאחורי פייוול או עמוד שנטען דינמית).",
+  RATE_LIMITED: "יותר מדי בקשות כרגע. נסו שוב בעוד כמה דקות.",
+  LLM_TIMEOUT: "הפענוח ארך זמן רב מדי. נסו שוב.",
+  SERVER_MISCONFIGURED: "שירות הפענוח אינו זמין כרגע.",
   NETWORK_ERROR: "בעיית תקשורת עם השרת. בדקו את החיבור לאינטרנט ונסו שוב.",
   UNKNOWN_ERROR: "אירעה שגיאה בלתי צפויה. נסו שוב מאוחר יותר.",
 };
@@ -24,20 +28,57 @@ const statusRegion = document.getElementById("status-region");
 const resultSection = document.getElementById("result-section");
 const resultAnswer = document.getElementById("result-answer");
 const resultSourceLink = document.getElementById("result-source-link");
+const historySection = document.getElementById("history-section");
+const historyList = document.getElementById("history-list");
+const clearHistoryButton = document.getElementById("clear-history-button");
 
 function setStatus(message, tone = "") {
   statusRegion.textContent = message;
   statusRegion.dataset.tone = tone;
 }
 
-function showResult(url, article) {
-  resultSourceLink.href = url;
-  // Temporary (Phase 2) preview of the raw extracted content, ahead of the
-  // Groq-powered short-answer summary that replaces this in Phase 3.
-  const preview = article.text.length > 400 ? `${article.text.slice(0, 400)}...` : article.text;
-  resultAnswer.textContent = `[${article.method}] ${article.title || "(ללא כותרת)"}\n\n${preview}`;
+function showAnswer(sourceUrl, answer) {
+  resultAnswer.textContent = answer;
+  resultSourceLink.href = sourceUrl;
   resultSection.hidden = false;
 }
+
+function showFailure(sourceUrl) {
+  resultAnswer.textContent = "";
+  resultSourceLink.href = sourceUrl;
+  resultSection.hidden = false;
+}
+
+function renderHistory() {
+  const items = getHistory();
+  historyList.textContent = "";
+  historySection.hidden = items.length === 0;
+
+  for (const item of items) {
+    const li = document.createElement("li");
+    li.className = "history-item";
+
+    const answerP = document.createElement("p");
+    answerP.className = "history-item-answer";
+    answerP.textContent = item.answer;
+    li.appendChild(answerP);
+
+    const link = document.createElement("a");
+    link.className = "source-link";
+    link.href = item.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = item.sourceTitle || "לקריאת הכתבה המקורית";
+    li.appendChild(link);
+
+    historyList.appendChild(li);
+  }
+}
+
+clearHistoryButton.addEventListener("click", () => {
+  clearHistory();
+  renderHistory();
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -49,16 +90,18 @@ form.addEventListener("submit", async (event) => {
   setStatus("מפענח את הכתבה...");
 
   try {
-    const article = await extractArticle(url);
+    const { answer, sourceUrl, sourceTitle } = await decodeArticle(url);
     setStatus("");
-    showResult(url, article);
+    showAnswer(sourceUrl, answer);
+    addHistoryItem({ url: sourceUrl, sourceTitle, answer });
+    renderHistory();
   } catch (err) {
     const code = err instanceof ApiError ? err.code : "UNKNOWN_ERROR";
     setStatus(ERROR_MESSAGES[code] || ERROR_MESSAGES.UNKNOWN_ERROR, "error");
-    resultSourceLink.href = url;
-    resultAnswer.textContent = "";
-    resultSection.hidden = false;
+    showFailure(url);
   } finally {
     submitButton.disabled = false;
   }
 });
+
+renderHistory();

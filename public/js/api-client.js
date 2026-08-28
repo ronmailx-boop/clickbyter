@@ -9,10 +9,10 @@ export class ApiError extends Error {
   }
 }
 
-export async function extractArticle(url) {
+export async function decodeArticle(url) {
   let response;
   try {
-    response = await fetch(`${API_BASE_URL}/api/extract`, {
+    response = await fetch(`${API_BASE_URL}/api/decode`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url }),

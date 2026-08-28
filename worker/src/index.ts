@@ -46,7 +46,11 @@ async function handleDecode(request: Request, env: Env): Promise<Response> {
     if (err instanceof ExtractionFailedError) {
       return jsonResponse({ error: "EXTRACTION_FAILED" }, env, 200);
     }
-    return jsonResponse({ error: "UNKNOWN_ERROR" }, env, 200);
+    return jsonResponse(
+      { error: "UNKNOWN_ERROR", detail: err instanceof Error ? err.message : String(err) },
+      env,
+      200
+    );
   }
 
   if (!env.GROQ_API_KEY) {
@@ -70,6 +74,10 @@ async function handleDecode(request: Request, env: Env): Promise<Response> {
     if (err instanceof ServerMisconfiguredError) {
       return jsonResponse({ error: "SERVER_MISCONFIGURED" }, env, 200);
     }
-    return jsonResponse({ error: "UNKNOWN_ERROR" }, env, 200);
+    return jsonResponse(
+      { error: "UNKNOWN_ERROR", detail: err instanceof Error ? err.message : String(err) },
+      env,
+      200
+    );
   }
 }

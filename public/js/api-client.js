@@ -1,9 +1,10 @@
 const API_BASE_URL = "https://clickbyter-api.ronmailx.workers.dev";
 
 export class ApiError extends Error {
-  constructor(code) {
+  constructor(code, detail) {
     super(code);
     this.code = code;
+    this.detail = detail;
   }
 }
 
@@ -27,7 +28,7 @@ export async function decodeArticle(url) {
   }
 
   if (data.error) {
-    throw new ApiError(data.error);
+    throw new ApiError(data.error, data.detail);
   }
 
   return data;

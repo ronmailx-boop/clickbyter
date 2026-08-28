@@ -28,22 +28,21 @@
 - [x] מיזוג הענף ל-`main` (PR #1) + תיקון גרסת Node ב-`deploy-worker.yml` מ-20 ל-22 (PR #2, ראו למטה) - **פריסת ה-Worker ל-Cloudflare הצליחה בפועל**.
 
 ## Current Focus
-המשתמש נמצא באמצע תהליך הפריסה בפועל, בהדרכה צעד-צעד (דרך הדפדפן בנייד):
+**האפליקציה חיה!** כתובת האתר: `https://ronmailx-boop.github.io/clickbyter/`. כתובת ה-Worker: `https://clickbyter-api.ronmailx.workers.dev`.
 
-- [x] מפתח Groq API - נוצר ונשמר אצל המשתמש.
+- [x] מפתח Groq API - נוצר ונשמר.
 - [x] חשבון Cloudflare + Token (`CLOUDFLARE_API_TOKEN`) - נוצר ונוסף כ-GitHub secret.
 - [x] מיזוג ל-`main` (PR #1) + תיקון Node 20→22 ב-`deploy-worker.yml` (PR #2).
-- [x] **פריסת ה-Worker ל-Cloudflare הצליחה** - אמור להופיע ב-Cloudflare Dashboard בשם `clickbyter-api`.
+- [x] **פריסת ה-Worker ל-Cloudflare הצליחה**, בשם `clickbyter-api`.
+- [x] `GROQ_API_KEY` נוסף כ-secret ישירות דרך Cloudflare Dashboard.
+- [x] `API_BASE_URL` (בקוד הלקוח) ו-`ALLOWED_ORIGIN` (ב-Worker) עודכנו לכתובות האמיתיות (PR #4) - **שני ה-workflows רצו מחדש בהצלחה**.
 
-נותרו:
-1. **הוספת `GROQ_API_KEY` ל-Worker** - עכשיו שה-Worker קיים ב-Cloudflare, אפשר להוסיף את זה ישירות דרך ה-Dashboard (Workers & Pages → clickbyter-api → Settings → Variables and Secrets → Add), בלי צורך ב-CLI.
-2. **GitHub Pages**: לוודא/להפעיל Settings → Pages → Source: GitHub Actions בריפו `clickbyter`.
-3. **עדכון כתובות אחרי איתור כתובת ה-Worker בפועל**:
-   - `public/js/api-client.js`: `API_BASE_URL` מ-`http://localhost:8792` לכתובת האמיתית של ה-Worker.
-   - `worker/wrangler.toml`: `ALLOWED_ORIGIN` מ-`http://localhost:8791` לכתובת ה-GitHub Pages האמיתית.
-4. **מסמכים משפטיים**: מילוי שדות ה-`[PLACEHOLDER]` ב-`docs/legal/*.md`.
-5. **בדיקה אמיתית על Android**: התקנה + שיתוף אמיתי - לא ניתן לבצע מתוך סשן זה.
-6. **החלטה על נתיב פריסה**: דומיין מותאם אישית מול `username.github.io/clickbyter/`.
+נותרו (לא חוסמים שימוש בסיסי):
+1. **וידוא GitHub Pages**: לוודא ש-Settings → Pages → Source מוגדר ל-GitHub Actions (ה-deploy הראשון כבר הצליח, כך שכנראה כבר מוגדר נכון - שווה רק לוודא חזותית).
+2. **בדיקה חיה**: לבקר בכתובת האתר ולנסות להדביק קישור אמיתי לכתבה - זו הבדיקה האמיתית הראשונה מול Groq אמיתי ואתר חדשות אמיתי.
+3. **מסמכים משפטיים**: מילוי שדות ה-`[PLACEHOLDER]` ב-`docs/legal/*.md`.
+4. **בדיקה אמיתית על Android**: התקנה + שיתוף אמיתי מאפליקציה - לא ניתן לבצע מתוך סשן זה.
+5. **החלטה על נתיב פריסה**: דומיין מותאם אישית מול `username.github.io/clickbyter/` (כרגע פועל עם הנתיב הרגיל).
 
 ### הערה חשובה: מגבלת רשת בסביבת הפיתוח הנוכחית
 בסביבת ה-sandbox של הסשן הזה, גישת רשת יוצאת (egress) חסומה לרוב האינטרנט (מותרים רק registry.npmjs.org, GitHub, ועוד כמה דומיינים ספציפיים) - **לא ניתן היה לבדוק כאן שליפה אמיתית של כתבות מאתרי חדשות בפועל**, וגם לא לפרוס בפועל ל-Cloudflare (`workers.cloudflare.com` חסום גם הוא). לכן: לוגיקת החילוץ (`worker/src/extract.ts`) ולוגיקת Groq (`worker/src/groq.ts`) נבדקו ביחידה (unit tests) עם HTML/תשובות מדומות, וה-UI נבדק מקצה לקצה מול ה-worker המקומי (`wrangler dev`) עם mocking ל-API. הבדיקה נגד אתרי חדשות אמיתיים (פייוולים, אתרי SPA וכו') ומול Groq אמיתי חייבת להתבצע לאחר פריסה אמיתית (מהמחשב של המשתמש או דרך GitHub Actions), לא מתוך סשן זה.

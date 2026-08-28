@@ -1,5 +1,6 @@
 import { decodeArticle, ApiError } from "./api-client.js";
 import { getHistory, addHistoryItem, clearHistory } from "./history-store.js";
+import { getSharedUrlFromLocation } from "./share-target.js";
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -75,16 +76,7 @@ function renderHistory() {
   }
 }
 
-clearHistoryButton.addEventListener("click", () => {
-  clearHistory();
-  renderHistory();
-});
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const url = urlInput.value.trim();
-  if (!url) return;
-
+async function processUrl(url) {
   resultSection.hidden = true;
   submitButton.disabled = true;
   setStatus("מפענח את הכתבה...");
@@ -102,6 +94,26 @@ form.addEventListener("submit", async (event) => {
   } finally {
     submitButton.disabled = false;
   }
+}
+
+clearHistoryButton.addEventListener("click", () => {
+  clearHistory();
+  renderHistory();
+});
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const url = urlInput.value.trim();
+  if (!url) return;
+  processUrl(url);
 });
 
 renderHistory();
+
+const sharedUrl = getSharedUrlFromLocation();
+if (sharedUrl) {
+  urlInput.value = sharedUrl;
+  // Drop the share-target query params so a page refresh doesn't reprocess the same link.
+  window.history.replaceState(null, "", window.location.pathname);
+  processUrl(sharedUrl);
+}

@@ -1,10 +1,14 @@
-const CACHE_NAME = "clickbyter-shell-v1";
+const CACHE_NAME = "clickbyter-shell-v2";
 const SHELL_ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./css/style.css",
   "./js/app.js",
+  "./js/api-client.js",
+  "./js/history-store.js",
+  "./js/share-target.js",
+  "./js/url-extract.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png",

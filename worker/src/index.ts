@@ -60,15 +60,7 @@ async function handleDecode(request: Request, env: Env): Promise<Response> {
   try {
     const answer = await decodeAnswer(article.title, article.text, env.GROQ_API_KEY);
     return jsonResponse(
-      {
-        answer,
-        sourceUrl,
-        sourceTitle: article.title,
-        // TODO: temporary diagnostics to check extraction quality on
-        // real-world sites - remove once verified.
-        debugMethod: article.method,
-        debugTextLength: article.text.length,
-      },
+      { answer, sourceUrl, sourceTitle: article.title },
       env,
       200
     );

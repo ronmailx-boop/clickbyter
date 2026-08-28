@@ -120,16 +120,23 @@ export async function extractArticle(rawUrl: string): Promise<ExtractedArticle> 
   const url = assertSafeUrl(rawUrl);
   const html = await fetchHtml(url);
 
-  const { document } = parseHTML(html);
-
+  // Real-world HTML is messy, and linkedom's parser (unlike a real browser)
+  // can throw on markup it doesn't expect. Any failure anywhere in this
+  // parse-and-extract pipeline means "couldn't read this article", not an
+  // unexpected server error - so it all maps to ExtractionFailedError.
   try {
-    // Readability mutates the DOM it's given; clone via re-parsing so the
-    // fallback paths below still have an intact document to query.
-    const { document: readabilityDoc } = parseHTML(html);
-    const article = new Readability(readabilityDoc as unknown as Document, {
-      // @ts-expect-error - Readability's types don't declare this option but it's supported
-      url: url.toString(),
-    }).parse();
+    // Readability mutates the DOM it's given, so parse twice: once for it,
+    // once left intact for the OG/paragraph fallbacks below.
+    let article: ReturnType<Readability["parse"]> = null;
+    try {
+      const { document: readabilityDoc } = parseHTML(html);
+      article = new Readability(readabilityDoc as unknown as Document, {
+        // @ts-expect-error - Readability's types don't declare this option but it's supported
+        url: url.toString(),
+      }).parse();
+    } catch {
+      // fall through to the OG/paragraph fallbacks below
+    }
     if (article?.textContent && article.textContent.trim().length >= MIN_USABLE_TEXT_LENGTH) {
       return {
         title: (article.title || "").trim(),
@@ -137,18 +144,20 @@ export async function extractArticle(rawUrl: string): Promise<ExtractedArticle> 
         method: "readability",
       };
     }
+
+    const { document } = parseHTML(html);
+
+    const ogResult = extractOgFallback(document as unknown as Document);
+    if (ogResult) {
+      return { ...ogResult, method: "og-description" };
+    }
+
+    const rawResult = extractRawParagraphs(document as unknown as Document);
+    if (rawResult) {
+      return { ...rawResult, method: "raw-paragraphs" };
+    }
   } catch {
-    // fall through to the OG/paragraph fallbacks below
-  }
-
-  const ogResult = extractOgFallback(document as unknown as Document);
-  if (ogResult) {
-    return { ...ogResult, method: "og-description" };
-  }
-
-  const rawResult = extractRawParagraphs(document as unknown as Document);
-  if (rawResult) {
-    return { ...rawResult, method: "raw-paragraphs" };
+    throw new ExtractionFailedError("parse_failed");
   }
 
   throw new ExtractionFailedError("no_usable_content");

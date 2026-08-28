@@ -1,0 +1,228 @@
+:root {
+  --color-bg: #111122;
+  --color-bg-elevated: #1b1b34;
+  --color-text: #f2f2f7;
+  --color-text-muted: #a8a8c0;
+  --color-accent: #ffd146;
+  --color-accent-text: #111122;
+  --color-error: #ff6b6b;
+  --color-border: #2c2c4a;
+  --radius: 14px;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.app-header {
+  padding: var(--space-3) var(--space-2) var(--space-2);
+  text-align: center;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-accent);
+}
+
+.app-tagline {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.app-main {
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 var(--space-2) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.add-link-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+.field-label {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.url-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: calc(var(--radius) - 6px);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 1rem;
+  direction: ltr;
+  text-align: end;
+}
+
+.url-input:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.primary-button {
+  margin-top: var(--space-1);
+  padding: 0.85rem 1rem;
+  border: none;
+  border-radius: calc(var(--radius) - 6px);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-button:active {
+  transform: translateY(1px);
+}
+
+.primary-button[aria-busy="true"] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.primary-button:focus-visible,
+.text-button:focus-visible,
+.source-link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.status-region {
+  min-height: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.status-region[data-tone="error"] {
+  color: var(--color-error);
+}
+
+.result-section {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.result-section:not([hidden]) {
+  display: flex;
+}
+
+.result-answer {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.source-link {
+  align-self: flex-start;
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.history-section {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.history-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.text-button {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.history-item {
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) - 6px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.history-item-answer {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.app-footer {
+  text-align: center;
+  padding: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}

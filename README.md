@@ -1,1 +1,7 @@
-# base-ai-template
+# Clickbyter
+
+PWA שמפענחת כתבות קליקבייט - שולחים לה קישור, והיא מחזירה רק את התשובה שהכותרת הסתירה, יחד עם קישור לכתבה המקורית.
+
+- `public/` - האתר הסטטי (GitHub Pages)
+- `worker/` - Cloudflare Worker לשליפת תוכן כתבות וקריאה ל-Groq
+- `docs/legal/` - מסמכים משפטיים

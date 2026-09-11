@@ -41,7 +41,15 @@ export function assertSafeUrl(rawUrl: string): URL {
   return url;
 }
 
-async function fetchHtml(url: URL): Promise<string> {
+interface FetchedHtml {
+  html: string;
+  // The URL after following any redirects (e.g. a bit.ly short link resolves
+  // to the real article URL here) - lets callers point users at the actual
+  // article instead of bouncing them through the shortener again.
+  finalUrl: string;
+}
+
+async function fetchHtml(url: URL): Promise<FetchedHtml> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
@@ -77,7 +85,10 @@ async function fetchHtml(url: URL): Promise<string> {
       buffer.set(chunk, offset);
       offset += chunk.byteLength;
     }
-    return new TextDecoder("utf-8").decode(buffer);
+    return {
+      html: new TextDecoder("utf-8").decode(buffer),
+      finalUrl: response.url || url.toString(),
+    };
   } catch (err) {
     if (err instanceof FetchFailedError) throw err;
     throw new FetchFailedError("network_error");
@@ -90,6 +101,7 @@ export interface ExtractedArticle {
   title: string;
   text: string;
   method: "readability" | "og-description" | "raw-paragraphs";
+  finalUrl: string;
 }
 
 function extractOgFallback(document: Document): { title: string; text: string } | null {
@@ -118,7 +130,7 @@ function extractRawParagraphs(document: Document): { title: string; text: string
 
 export async function extractArticle(rawUrl: string): Promise<ExtractedArticle> {
   const url = assertSafeUrl(rawUrl);
-  const html = await fetchHtml(url);
+  const { html, finalUrl } = await fetchHtml(url);
 
   // Real-world HTML is messy, and linkedom's parser (unlike a real browser)
   // can throw on markup it doesn't expect. Any failure anywhere in this
@@ -132,7 +144,7 @@ export async function extractArticle(rawUrl: string): Promise<ExtractedArticle> 
       const { document: readabilityDoc } = parseHTML(html);
       article = new Readability(readabilityDoc as unknown as Document, {
         // @ts-expect-error - Readability's types don't declare this option but it's supported
-        url: url.toString(),
+        url: finalUrl,
       }).parse();
     } catch {
       // fall through to the OG/paragraph fallbacks below
@@ -142,6 +154,7 @@ export async function extractArticle(rawUrl: string): Promise<ExtractedArticle> 
         title: (article.title || "").trim(),
         text: article.textContent.trim(),
         method: "readability",
+        finalUrl,
       };
     }
 
@@ -149,12 +162,12 @@ export async function extractArticle(rawUrl: string): Promise<ExtractedArticle> 
 
     const ogResult = extractOgFallback(document as unknown as Document);
     if (ogResult) {
-      return { ...ogResult, method: "og-description" };
+      return { ...ogResult, method: "og-description", finalUrl };
     }
 
     const rawResult = extractRawParagraphs(document as unknown as Document);
     if (rawResult) {
-      return { ...rawResult, method: "raw-paragraphs" };
+      return { ...rawResult, method: "raw-paragraphs", finalUrl };
     }
   } catch {
     throw new ExtractionFailedError("parse_failed");

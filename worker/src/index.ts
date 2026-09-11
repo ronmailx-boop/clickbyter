@@ -34,11 +34,11 @@ async function handleDecode(request: Request, env: Env): Promise<Response> {
   if (typeof body.url !== "string" || body.url.trim().length === 0) {
     return jsonResponse({ error: "INVALID_REQUEST" }, env, 400);
   }
-  const sourceUrl = body.url.trim();
+  const inputUrl = body.url.trim();
 
   let article;
   try {
-    article = await extractArticle(sourceUrl);
+    article = await extractArticle(inputUrl);
   } catch (err) {
     if (err instanceof FetchFailedError) {
       return jsonResponse({ error: "FETCH_FAILED" }, env, 200);
@@ -60,7 +60,10 @@ async function handleDecode(request: Request, env: Env): Promise<Response> {
   try {
     const answer = await decodeAnswer(article.title, article.text, env.GROQ_API_KEY);
     return jsonResponse(
-      { answer, sourceUrl, sourceTitle: article.title },
+      // article.finalUrl is the URL after following any redirects (e.g. a
+      // bit.ly link resolves to the real article here) - point the user at
+      // the actual article, not back through the shortener.
+      { answer, sourceUrl: article.finalUrl, sourceTitle: article.title },
       env,
       200
     );

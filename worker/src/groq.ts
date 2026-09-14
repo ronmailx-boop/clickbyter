@@ -37,7 +37,13 @@ export async function decodeAnswer(
       body: JSON.stringify({
         model: GROQ_MODEL,
         temperature: 0.2,
-        max_tokens: 200,
+        // gpt-oss-20b is a reasoning model - it spends part of max_tokens on
+        // internal reasoning before writing the actual answer, so a low cap
+        // was cutting the real answer off mid-sentence. reasoning_effort
+        // "low" keeps that reasoning short for this simple extraction task,
+        // and max_tokens leaves enough room for both.
+        reasoning_effort: "low",
+        max_tokens: 600,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           {

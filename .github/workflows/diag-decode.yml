@@ -1,0 +1,29 @@
+name: Diagnose decode
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check each Newsly source's article-page access with the worker's own User-Agent
+        run: |
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+          declare -A urls=(
+            [ynet]="https://www.ynet.co.il/news/article/hyy435hyze"
+            [walla]="https://news.walla.co.il/item/3867753"
+            [maariv]="https://www.maariv.co.il/news/law/article-1366318"
+            [israelhayom]="https://www.israelhayom.co.il/news/world-news/middle-east/article/21421045"
+            [kikar]="https://www.kikar.co.il/world-news/trump-iran-social-media-posts"
+            [hakolhayehudi]="https://www.hakolhayehudi.co.il/item/security/%D7%94%D7%91%D7%90%D7%92%D7%99_%D7%9E%D7%91%D7%99%D7%A8_%D7%94%D7%93%D7%90%D7%92___%D7%9B%D7%AA%D7%91_%D7%90%D7%99%D7%A9%D7%95%D7%9D_%D7%A0%D7%92%D7%93_%D7%91%D7%93%D7%95%D7%90%D7%99_%D7%A2%D7%9C_%D7%94%D7%91%D7%A8%D7%97%D7%94_%D7%91%D7%A2%D7%96%D7%A8%D7%AA_%D7%A8%D7%97%D7%A4%D7%9F"
+          )
+          for source in "${!urls[@]}"; do
+            url="${urls[$source]}"
+            echo "=== $source ==="
+            status=$(curl -sS -o /tmp/body.html -D /tmp/headers.txt -A "$UA" -H "Accept: text/html,application/xhtml+xml" --max-time 15 -w "%{http_code}" "$url" || echo "CURL_ERR")
+            server=$(grep -i '^server:' /tmp/headers.txt | tr -d '\r' || true)
+            size=$(wc -c < /tmp/body.html)
+            echo "status=$status $server body_bytes=$size"
+            echo ""
+          done

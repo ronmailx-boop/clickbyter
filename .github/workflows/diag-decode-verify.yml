@@ -1,0 +1,23 @@
+name: Diagnose Decode Verify
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call the deployed Worker with a real article URL and inspect the answer
+        run: |
+          for url in \
+            "https://news.walla.co.il/item/3867759" \
+            "https://www.ynet.co.il/news/article/rj36u5stfl" \
+            ; do
+            echo "=== $url ==="
+            curl -sS -X POST "https://clickbyter-api.ronmailx.workers.dev/api/decode" \
+              -H "Content-Type: application/json" \
+              -H "Origin: https://ronmailx-boop.github.io" \
+              -d "{\"url\":\"$url\"}" \
+              --max-time 25 -w "\nHTTP_STATUS:%{http_code}\n"
+            echo ""
+          done

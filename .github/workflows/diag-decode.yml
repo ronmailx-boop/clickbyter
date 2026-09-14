@@ -1,0 +1,20 @@
+name: Diagnose decode
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Article URL to test"
+        required: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call /api/decode against the live worker
+        run: |
+          curl -sS -X POST "https://clickbyter-api.ronmailx.workers.dev/api/decode" \
+            -H "Content-Type: application/json" \
+            -H "Origin: https://ronmailx-boop.github.io" \
+            -d "{\"url\": \"${{ inputs.url }}\"}" \
+            -w "\nHTTP_STATUS:%{http_code}\n"

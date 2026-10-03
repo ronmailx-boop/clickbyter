@@ -4,11 +4,13 @@ compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-# The exact origin allowed to call this API (CORS). Note: an Origin header is
-# scheme+host only, never a path - so this is "https://ronmailx-boop.github.io",
-# NOT ".../clickbyter" (the repo name is a path segment GitHub Pages serves the
-# site under, not part of the origin).
-ALLOWED_ORIGIN = "https://ronmailx-boop.github.io"
+# Comma-separated list of origins allowed to call this API (CORS). An Origin
+# header is scheme+host only, never a path - so "https://ronmailx-boop.github.io",
+# NOT ".../newsly" (the repo name is a path segment GitHub Pages serves the
+# site under, not part of the origin). Newsly is moving to a Cloudflare
+# custom domain (newsly.vplusstudio.app) while keeping GitHub Pages live in
+# parallel for now - both need to work, hence the list instead of one value.
+ALLOWED_ORIGINS = "https://ronmailx-boop.github.io,https://newsly.vplusstudio.app"
 
 # Secrets (never set here - use `wrangler secret put GROQ_API_KEY` instead):
 #   GROQ_API_KEY
